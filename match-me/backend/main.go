@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"log"
 	"matchme/handlers"
 	"net/http"
@@ -9,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/handler"
 	_ "github.com/lib/pq"
 	"github.com/rs/cors"
 	"golang.org/x/exp/rand"
@@ -60,6 +63,10 @@ func updateInactiveUsersStatus(db *sql.DB) {
 }
 
 func main() {
+	// Add development mode flag
+	devMode := flag.Bool("d", false, "Run in development mode")
+	flag.Parse()
+
 	// Initialize random seed
 	rand.Seed(uint64(time.Now().UnixNano()))
 
@@ -138,6 +145,56 @@ func main() {
 	r.HandleFunc("/api/status/update", handlers.UpdateUserStatusHandler(db)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/status/{id}", handlers.GetUserStatusHandler(db)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/api/notifications/mark-read", handlers.MarkMessagesAsReadHandler(db)).Methods("POST", "OPTIONS")
+
+	// Initialize GraphQL schema
+	schema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query: graphql.NewObject(graphql.ObjectConfig{
+			Name:   "RootQuery",
+			Fields: graphql.Fields{
+				// Add your GraphQL queries here
+			},
+		}),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create GraphQL handler
+	h := handler.New(&handler.Config{
+		Schema:   &schema,
+		Pretty:   true,
+		GraphiQL: *devMode,
+	})
+
+	// Add GraphQL endpoint
+	r.Handle("/graphql", h)
+
+	// Only expose GraphQL playground in dev mode
+	if *devMode {
+		r.HandleFunc("/playground", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>GraphQL Playground</title>
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/graphql-playground-react/build/static/css/index.css" />
+                    <script src="https://cdn.jsdelivr.net/npm/graphql-playground-react/build/static/js/middleware.js"></script>
+                </head>
+                <body>
+                    <div id="root">
+                        <script>
+                            window.addEventListener('load', function (event) {
+                                GraphQLPlayground.init(document.getElementById('root'), {
+                                    endpoint: '/graphql'
+                                })
+                            })
+                        </script>
+                    </div>
+                </body>
+                </html>
+            `))
+		})
+	}
 
 	// CORS configuration
 	c := cors.New(cors.Options{
