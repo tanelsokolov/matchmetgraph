@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bomberman</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Join Screen -->
+    <div id="joinScreen" class="screen">
+        <div class="container">
+            <h1>Bomberman</h1>
+            <div class="join-form">
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="15">
+                <button id="joinButton">Join Game</button>
+            </div>
+            <div class="player-list">
+                <h2>Players</h2>
+                <p class="ready-instructions">Press 'R' to mark yourself as ready</p>
+                <ul id="waitingPlayers"></ul>
+            </div>
+            <div id="hostControls" style="display: none;">
+                <button id="startButton" disabled>Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen" style="display: none;">
+        <div class="game-container">
+            <!-- Game Info -->
+            <div class="game-info">
+                <div class="timer">Time remaining: <span id="gameTimer">0:00</span></div>
+                <div class="scores" id="scoreBoard"></div>
+            </div>
+
+            <!-- Game Grid -->
+            <div id="gameGrid" class="game-grid"></div>
+
+            <!-- Game Menu -->
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pauseScreen" class="overlay" style="display: none;">
+            <div class="pause-menu">
+                <h2>Game Paused</h2>
+                <p id="pauseMessage"></p>
+                <button id="resumeButton">Resume</button>
+                <button id="quitButton">Quit</button>
+                <button id="restartButton" style="display: none;">Restart Game</button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="overlay" style="display: none;">
+            <div class="game-over-menu">
+                <h2>Game Over!</h2>
+                <p id="winnerMessage"></p>
+                <div id="finalScores"></div>
+                <button id="returnToLobbyButton">Return to Lobby</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Messages -->
+    <div id="messageBox" class="message-box" style="display: none;"></div>
+
+    <!-- Controls Instructions -->
+    <div class="controls-info">
+        <h3>Controls:</h3>
+        <p>Move: Arrow Keys or WASD</p>
+        <p>Place Bomb: Spacebar</p>
+        <p>Pause Game: Escape</p>
+    </div>
+
+    <!-- Power-up Status -->
+    <div id="powerUpStatus" class="power-up-status" style="display: none;">
+        <div class="icon" id="powerUpIcon"></div>
+        <div class="timer" id="powerUpTimer"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Initialize socket.io globally since it's needed by both modules
+        window.io = io;
+    </script>
+    <script type="module" src="js/client.js"></script>
+    <script type="module" src="js/game.js"></script>
+</body>
+</html>

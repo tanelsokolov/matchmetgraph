@@ -1,0 +1,24 @@
+{
+  "name": "bomberman",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitea.kood.tech/tanelsokolov/web-game.git"
+  },
+  "keywords": [],
+  "author": "Tanel Sokolov, Amberleigh Wankel",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "dependencies": {
+    "express": "4.21.2",
+    "ngrok": "5.0.0-beta.2",
+    "socket.io": "4.8.1",
+    "nodemon": "3.1.9"
+  }
+}
